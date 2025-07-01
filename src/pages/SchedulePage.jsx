@@ -133,13 +133,20 @@ function SchedulePage() {
         
         <div style={{ 
           display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center',
+          flexDirection: 'column',
+          gap: '15px',
           marginBottom: '20px'
         }}>
           <h2 style={{ margin: 0, color: '#333' }}>Schedule Timeline</h2>
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          
+          {/* Time/Todo Controls Row */}
+          <div style={{ 
+            display: 'flex', 
+            flexWrap: 'wrap',
+            gap: '10px',
+            alignItems: 'center'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
               <label style={{ 
                 fontSize: '14px', 
                 fontWeight: 'bold', 
@@ -220,6 +227,8 @@ function SchedulePage() {
                 {isLoadingTodos ? '⏳ Loading...' : '✅ Manage Todos'}
               </button>
             </div>
+            
+            {/* Add Event Button - will wrap to new line on mobile */}
             <button 
               className="btn btn-primary"
               onClick={() => {
@@ -227,8 +236,30 @@ function SchedulePage() {
                 setSelectedHour(null);
                 setShowModal(true);
               }}
+              style={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                border: '2px solid rgba(255, 255, 255, 0.3)',
+                color: 'white',
+                padding: '12px 20px',
+                borderRadius: '8px',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)',
+                transition: 'all 0.3s ease',
+                whiteSpace: 'nowrap',
+                minWidth: 'fit-content'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = 'translateY(-1px)';
+                e.target.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.6)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = 'translateY(0)';
+                e.target.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.4)';
+              }}
             >
-              + Add Event
+              ➕ Add Event
             </button>
           </div>
         </div>

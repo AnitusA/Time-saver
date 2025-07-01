@@ -3,16 +3,6 @@ import React from 'react';
 function TimelineSlots({ events, selectedDate, onSlotClick, onEventEdit, todos, onTodoClick, onToggleTodo }) {
   // Generate hours for the timeline (showing 12-hour format like in your image)
   const hours = Array.from({ length: 24 }, (_, i) => i);
-  
-  // Add CSS animation styles for booked slots
-  const pulseAnimation = {
-    animation: 'pulse 3s infinite',
-    '@keyframes pulse': {
-      '0%': { opacity: 1 },
-      '50%': { opacity: 0.8 },
-      '100%': { opacity: 1 }
-    }
-  };
 
   // Inject CSS for the pulse animation
   React.useEffect(() => {
@@ -570,7 +560,6 @@ function TimelineSlots({ events, selectedDate, onSlotClick, onEventEdit, todos, 
                 slot.style.zIndex = '1';
                 slot.style.filter = 'brightness(1) saturate(1)';
                 // Reset box shadow to default
-                const computedStyle = window.getComputedStyle(slot);
                 if (hasEvents) {
                   slot.style.boxShadow = '0 12px 35px rgba(0,0,0,0.3), 0 0 20px currentColor';
                 } else {

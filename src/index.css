@@ -175,3 +175,46 @@ input:focus, textarea:focus, select:focus {
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(135deg, #7c3aed, #0891b2, #059669);
 }
+
+/* Responsive layout for schedule controls */
+@media (max-width: 768px) {
+  .schedule-controls {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 15px !important;
+  }
+  
+  .time-todo-controls {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+  
+  .time-todo-controls > div {
+    justify-content: center !important;
+  }
+  
+  .add-event-btn {
+    width: 100% !important;
+    justify-self: center !important;
+    margin-top: 10px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .time-todo-controls > div {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+  
+  .time-todo-controls label {
+    margin-bottom: 5px !important;
+  }
+  
+  .time-todo-controls select,
+  .time-todo-controls button {
+    width: 100% !important;
+    max-width: 250px !important;
+  }
+}

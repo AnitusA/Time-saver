@@ -131,7 +131,7 @@ function SchedulePage() {
           onDateChange={setSelectedDate}
         />
         
-        <div style={{ 
+        <div className="schedule-controls" style={{ 
           display: 'flex', 
           flexDirection: 'column',
           gap: '15px',
@@ -140,7 +140,7 @@ function SchedulePage() {
           <h2 style={{ margin: 0, color: '#333' }}>Schedule Timeline</h2>
           
           {/* Time/Todo Controls Row */}
-          <div style={{ 
+          <div className="time-todo-controls" style={{ 
             display: 'flex', 
             flexWrap: 'wrap',
             gap: '10px',
@@ -230,7 +230,7 @@ function SchedulePage() {
             
             {/* Add Event Button - will wrap to new line on mobile */}
             <button 
-              className="btn btn-primary"
+              className="btn btn-primary add-event-btn"
               onClick={() => {
                 setEditingEvent(null);
                 setSelectedHour(null);

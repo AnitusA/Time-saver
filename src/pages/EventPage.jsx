@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 
 function EventPage() {
   const { id } = useParams();
@@ -35,25 +34,16 @@ function EventPage() {
 
   if (!event) {
     return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="container"
-      >
+      <div className="container">
         <div style={{ padding: '20px', textAlign: 'center' }}>
           Loading event details...
         </div>
-      </motion.div>
+      </div>
     );
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -50 }}
-      className="container"
-    >
+    <div className="container">
       <div style={{ padding: '20px' }}>
         <button 
           className="btn btn-secondary"
@@ -117,7 +107,7 @@ function EventPage() {
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 

@@ -73,8 +73,8 @@ function TimeSlot({ time, events }) {
                 fontSize: '12px',
                 transition: 'background-color 0.2s'
               }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = '#0056b3'}
-              onMouseLeave={(e) => e.target.style.backgroundColor = '#007bff'}
+              
+              
             >
               View Details
             </button>

@@ -1,18 +1,12 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 
 function DatePage() {
   const { date } = useParams();
   const navigate = useNavigate();
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: 100 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -100 }}
-      className="container"
-    >
+    <div className="container">
       <div style={{ padding: '20px' }}>
         <button 
           className="btn btn-secondary"
@@ -34,7 +28,7 @@ function DatePage() {
           <p>Date: {date}</p>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 

@@ -1,313 +1,173 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
 import DateHeader from '../components/DateHeader';
 import TimelineSlots from '../components/TimelineSlots';
 import AddEventModal from '../components/AddEventModal';
-import TodoModal from '../components/TodoModal';
-import SlotActionModal from '../components/SlotActionModal';
 
 function SchedulePage() {
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [events, setEvents] = useState([]);
   const [todos, setTodos] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [showTodoModal, setShowTodoModal] = useState(false);
-  const [showSlotActionModal, setShowSlotActionModal] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [showAddEventModal, setShowAddEventModal] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
   const [selectedHour, setSelectedHour] = useState(null);
-  const [todoTimeSlot, setTodoTimeSlot] = useState(9);
-  const [isLoadingTodos, setIsLoadingTodos] = useState(false);
 
-  const addEvent = (eventData) => {
+  // Load data from localStorage on component mount
+  useEffect(() => {
+    const savedEvents = localStorage.getItem('timeKeeper_events');
+    const savedTodos = localStorage.getItem('timeKeeper_todos');
+    
+    if (savedEvents) {
+      try {
+        setEvents(JSON.parse(savedEvents));
+      } catch (error) {
+        console.error('Error parsing saved events:', error);
+      }
+    }
+    
+    if (savedTodos) {
+      try {
+        setTodos(JSON.parse(savedTodos));
+      } catch (error) {
+        console.error('Error parsing saved todos:', error);
+      }
+    }
+  }, []);
+
+  // Save events to localStorage whenever events change
+  useEffect(() => {
+    localStorage.setItem('timeKeeper_events', JSON.stringify(events));
+  }, [events]);
+
+  // Save todos to localStorage whenever todos change
+  useEffect(() => {
+    localStorage.setItem('timeKeeper_todos', JSON.stringify(todos));
+  }, [todos]);
+
+  const handleAddEvent = (eventData) => {
     const newEvent = {
-      id: Date.now(),
       ...eventData,
-      date: selectedDate.toISOString().split('T')[0]
+      id: Date.now(),
+      completed: eventData.completed || false
     };
-    setEvents([...events, newEvent]);
-    setShowModal(false);
+    setEvents(prev => [...prev, newEvent]);
+    setShowAddEventModal(false);
     setSelectedHour(null);
   };
 
-  const updateEvent = (updatedEvent) => {
-    setEvents(events.map(event => 
+  const handleUpdateEvent = (updatedEvent) => {
+    setEvents(prev => prev.map(event => 
       event.id === updatedEvent.id ? updatedEvent : event
     ));
-    setShowModal(false);
+    setShowAddEventModal(false);
     setEditingEvent(null);
-    setSelectedHour(null);
   };
 
-  const deleteEvent = (eventId) => {
-    setEvents(events.filter(event => event.id !== eventId));
-    setShowModal(false);
+  const handleDeleteEvent = (eventId) => {
+    setEvents(prev => prev.filter(event => event.id !== eventId));
+    setShowAddEventModal(false);
     setEditingEvent(null);
-    setSelectedHour(null);
   };
 
-  const handleSlotClick = (hour) => {
-    setSelectedHour(hour);
-    setShowSlotActionModal(true);
-  };
-
-  const handleEventEdit = (event) => {
-    setEditingEvent(event);
-    setSelectedHour(null);
-    setShowModal(true);
-  };
-
-  const handleModalClose = () => {
-    setShowModal(false);
-    setEditingEvent(null);
-    setSelectedHour(null);
-  };
-
-  const handleTodoClick = (hour) => {
-    setTodoTimeSlot(hour);
-    setShowTodoModal(true);
-  };
-
-  const handleTodoModalClose = () => {
-    setShowTodoModal(false);
-  };
-
-  const handleSlotActionModalClose = () => {
-    setShowSlotActionModal(false);
-    setSelectedHour(null);
-  };
-
-  const handleAddEventFromSlot = () => {
-    setEditingEvent(null);
-    setShowModal(true);
-    setShowSlotActionModal(false);
-    // Keep selectedHour so it gets passed to AddEventModal
-  };
-
-  const handleManageTodosFromSlot = () => {
-    setTodoTimeSlot(selectedHour);
-    setShowTodoModal(true);
-    setShowSlotActionModal(false);
-  };
-
-  const addTodo = (todoData) => {
+  const handleAddTodo = (hour, todoText) => {
     const newTodo = {
-      ...todoData,
-      date: selectedDate.toISOString().split('T')[0] // Add date to todo
+      id: Date.now(),
+      text: todoText,
+      completed: false,
+      hour,
+      date: selectedDate.toISOString().split('T')[0]
     };
-    setTodos([...todos, newTodo]);
+    setTodos(prev => [...prev, newTodo]);
   };
 
-  const toggleTodo = (todoId) => {
-    setTodos(todos.map(todo =>
+  const handleToggleTodo = (todoId) => {
+    setTodos(prev => prev.map(todo =>
       todo.id === todoId ? { ...todo, completed: !todo.completed } : todo
     ));
   };
 
-  const deleteTodo = (todoId) => {
-    setTodos(todos.filter(todo => todo.id !== todoId));
+  const handleDeleteTodo = (todoId) => {
+    setTodos(prev => prev.filter(todo => todo.id !== todoId));
   };
 
-  // Filter events for the selected date
-  const todaysEvents = events.filter(event => 
-    event.date === selectedDate.toISOString().split('T')[0]
-  );
+  const handleEditEvent = (event) => {
+    setEditingEvent(event);
+    setShowAddEventModal(true);
+  };
 
-  // Filter todos for the selected date
-  const todaysTodos = todos.filter(todo => 
-    todo.date === selectedDate.toISOString().split('T')[0]
-  );
+  const handleToggleEventCompletion = (eventId) => {
+    setEvents(prev => prev.map(event =>
+      event.id === eventId ? { ...event, completed: !event.completed } : event
+    ));
+  };
+
+  const handleTimeSlotClick = (hour) => {
+    setSelectedHour(hour);
+    setShowAddEventModal(true);
+  };
+
+  const handleDateChange = (newDate) => {
+    setSelectedDate(newDate);
+  };
+
+  const handleNavigateDate = (newDate) => {
+    setSelectedDate(newDate);
+  };
+
+  // Get today's stats
+  const todayDateString = selectedDate.toISOString().split('T')[0];
+  const todayEvents = events.filter(event => event.date === todayDateString);
+  const todayTodos = todos.filter(todo => todo.date === todayDateString);
+  const completedTodos = todayTodos.filter(todo => todo.completed);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      className="container"
-    >
-      <div style={{ padding: '20px' }}>
+    <div className="container">
+      {/* Page Header */}
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-primary mb-2">⏰ Time Saver</h1>
+        <p className="text-lg text-secondary">Organize your day with precision and style</p>
+      </div>
+
+      {/* Date Navigation */}
+      <div className="mb-6">
         <DateHeader 
           selectedDate={selectedDate}
-          onDateChange={setSelectedDate}
+          onDateChange={handleDateChange}
+          onNavigateDate={handleNavigateDate}
         />
-        
-        <div className="schedule-controls" style={{ 
-          display: 'flex', 
-          flexDirection: 'column',
-          gap: '15px',
-          marginBottom: '20px'
-        }}>
-          <h2 style={{ margin: 0, color: '#333' }}>Schedule Timeline</h2>
-          
-          {/* Time/Todo Controls Row */}
-          <div className="time-todo-controls" style={{ 
-            display: 'flex', 
-            flexWrap: 'wrap',
-            gap: '10px',
-            alignItems: 'center'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-              <label style={{ 
-                fontSize: '14px', 
-                fontWeight: 'bold', 
-                color: '#333',
-                whiteSpace: 'nowrap'
-              }}>
-                Time:
-              </label>
-              <select
-                value={todoTimeSlot}
-                onChange={(e) => setTodoTimeSlot(parseInt(e.target.value))}
-                title="Select the time slot for managing todos"
-                style={{
-                  padding: '10px 16px',
-                  border: '2px solid rgba(240, 147, 251, 0.3)',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  background: 'rgba(255, 255, 255, 0.9)',
-                  color: '#333',
-                  fontWeight: 'bold',
-                  boxShadow: '0 4px 15px rgba(240, 147, 251, 0.2)',
-                  cursor: 'pointer',
-                  minWidth: '120px'
-                }}
-              >
-                {Array.from({ length: 24 }, (_, i) => {
-                  const hour = i;
-                  const formatHour = (h) => {
-                    if (h === 0) return '12 AM';
-                    if (h < 12) return `${h} AM`;
-                    if (h === 12) return '12 PM';
-                    return `${h - 12} PM`;
-                  };
-                  return (
-                    <option key={hour} value={hour}>
-                      {formatHour(hour)}
-                    </option>
-                  );
-                })}
-              </select>
-              <button 
-                onClick={() => {
-                  console.log('Opening todo modal for time slot:', todoTimeSlot);
-                  setIsLoadingTodos(true);
-                  setTimeout(() => {
-                    setShowTodoModal(true);
-                    setIsLoadingTodos(false);
-                  }, 100);
-                }}
-                disabled={isLoadingTodos}
-                style={{
-                  background: isLoadingTodos ? '#ccc' : 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                  border: '2px solid rgba(255, 255, 255, 0.3)',
-                  color: 'white',
-                  padding: '10px 16px',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  fontWeight: 'bold',
-                  cursor: isLoadingTodos ? 'not-allowed' : 'pointer',
-                  boxShadow: '0 4px 15px rgba(240, 147, 251, 0.4)',
-                  transition: 'all 0.3s ease',
-                  whiteSpace: 'nowrap',
-                  opacity: isLoadingTodos ? 0.7 : 1
-                }}
-                onMouseEnter={(e) => {
-                  if (!isLoadingTodos) {
-                    e.target.style.transform = 'translateY(-1px)';
-                    e.target.style.boxShadow = '0 6px 20px rgba(240, 147, 251, 0.6)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isLoadingTodos) {
-                    e.target.style.transform = 'translateY(0)';
-                    e.target.style.boxShadow = '0 4px 15px rgba(240, 147, 251, 0.4)';
-                  }
-                }}
-              >
-                {isLoadingTodos ? '⏳ Loading...' : '✅ Manage Todos'}
-              </button>
-            </div>
-            
-            {/* Add Event Button - will wrap to new line on mobile */}
-            <button 
-              className="btn btn-primary add-event-btn"
-              onClick={() => {
-                setEditingEvent(null);
-                setSelectedHour(null);
-                setShowModal(true);
-              }}
-              style={{
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                border: '2px solid rgba(255, 255, 255, 0.3)',
-                color: 'white',
-                padding: '12px 20px',
-                borderRadius: '8px',
-                fontSize: '14px',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)',
-                transition: 'all 0.3s ease',
-                whiteSpace: 'nowrap',
-                minWidth: 'fit-content'
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.transform = 'translateY(-1px)';
-                e.target.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.6)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.4)';
-              }}
-            >
-              ➕ Add Event
-            </button>
-          </div>
-        </div>
-
-        <TimelineSlots
-          events={todaysEvents}
-          selectedDate={selectedDate}
-          onSlotClick={handleSlotClick}
-          onEventEdit={handleEventEdit}
-          todos={todaysTodos}
-          onTodoClick={handleTodoClick}
-          onToggleTodo={toggleTodo}
-        />
-
-        {showSlotActionModal && (
-          <SlotActionModal
-            onClose={handleSlotActionModalClose}
-            timeSlot={selectedHour}
-            onAddEvent={handleAddEventFromSlot}
-            onManageTodos={handleManageTodosFromSlot}
-          />
-        )}
-
-        {showModal && (
-          <AddEventModal
-            onClose={handleModalClose}
-            onAddEvent={addEvent}
-            onUpdateEvent={updateEvent}
-            onDeleteEvent={deleteEvent}
-            selectedDate={selectedDate}
-            editingEvent={editingEvent}
-            selectedHour={selectedHour}
-          />
-        )}
-
-        {showTodoModal && (
-          <TodoModal
-            onClose={handleTodoModalClose}
-            timeSlot={todoTimeSlot}
-            todos={todaysTodos}
-            onAddTodo={addTodo}
-            onToggleTodo={toggleTodo}
-            onDeleteTodo={deleteTodo}
-            selectedDate={selectedDate}
-          />
-        )}
       </div>
-    </motion.div>
+
+      {/* Timeline */}
+      <div className="mb-6">
+        <TimelineSlots
+          selectedDate={selectedDate}
+          events={todayEvents}
+          todos={todayTodos}
+          onEditEvent={handleEditEvent}
+          onToggleEventCompletion={handleToggleEventCompletion}
+          onAddTodo={handleAddTodo}
+          onToggleTodo={handleToggleTodo}
+          onDeleteTodo={handleDeleteTodo}
+          onTimeSlotClick={handleTimeSlotClick}
+        />
+      </div>
+
+      {/* Add/Edit Event Modal */}
+      {showAddEventModal && (
+        <AddEventModal
+          onClose={() => {
+            setShowAddEventModal(false);
+            setEditingEvent(null);
+            setSelectedHour(null);
+          }}
+          onAddEvent={handleAddEvent}
+          onUpdateEvent={handleUpdateEvent}
+          onDeleteEvent={handleDeleteEvent}
+          selectedDate={selectedDate}
+          editingEvent={editingEvent}
+          selectedHour={selectedHour}
+        />
+      )}
+    </div>
   );
 }
 
